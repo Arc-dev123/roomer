@@ -41,7 +41,7 @@ async def on_message(message):
     if cur.fetchone() is not None:
       cur.execute("SELECT xp, level FROM user_stats WHERE user_id = ?", (str(message.author.id),))
       info = cur.fetchall()
-      if info[0] >= info[1] * 500:
+      if info[0] >= info[1] * 25:
         cur.execute("UPDATE user_stats SET xp = ?, level = ? WHERE user_id = ?", (0, info[1] + 1, str(message.author.id),))
         db.commit()
         await message.channel.send(f"Congratulations, {message.author.mention}! You've reached level {info[1] + 1}!", ephemeral=True)
