@@ -2,7 +2,7 @@
 
 # 🔥🔥 Purpose 🔥🔥:
 Roomer is a discord bot which is specifically designed for smaller discord communities such as school club servers, roleplays, et cetra.
-This bot can be used to create 'Rooms' (seperate channels for users), if they have the room key role of course. In which they can add or remove users too! Roomer is also opensources and anyone can use it to their liking.
+This bot can be used to create 'Rooms' (seperate channels for users), if they have the room key role of course. In which they can add or remove users too! Roomer is also open-source and anyone can use it to their liking.
 
 # 🗣️🗣️ Commands 🗣️🗣️:
 Roomer has 5 commands in total:
