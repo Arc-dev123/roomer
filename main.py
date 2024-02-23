@@ -73,4 +73,4 @@ async def on_message(message):
 for cog in config.cogs:
   bot.load_extension(cog)
 
-bot.run(os.getenv('TOKEN'))
+bot.run(config.secret)
