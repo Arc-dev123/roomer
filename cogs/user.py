@@ -67,7 +67,6 @@ class User(commands.Cog):
     channel = disnake.utils.get(interaction.guild.channels, id=channel_id)
     await channel.delete()
     cur.execute("DELETE FROM user WHERE user_id = ? AND server_id = ?", (str(interaction.user.id), str(interaction.guild_id),))
-    cur.execute("DELETE FROM user_stats WHERE user_id = ?", (str(interaction.user.id), str(interaction.guild_id),))
     db.commit()
     if interaction.channel_id == channel_id:
       await interaction.user.send("Done, your room has been deleted!")
