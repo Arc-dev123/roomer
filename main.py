@@ -1,10 +1,7 @@
 import disnake
-from disnake import user
-from disnake.channel import CategoryChannel
 from disnake.ext import commands
 import sqlite3
 import config
-import os
 
 intent = disnake.Intents.all()
 bot = commands.Bot(intents=intent, command_prefix="~")
@@ -73,4 +70,4 @@ async def on_message(message):
 for cog in config.cogs:
   bot.load_extension(cog)
 
-bot.run(os.getenv('TOKEN'))
+bot.run(config.secret)
