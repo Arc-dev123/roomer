@@ -1,6 +1,5 @@
 import disnake
 from disnake.ext import commands
-import sqlite3
 import config
 
 intent = disnake.Intents.all()
