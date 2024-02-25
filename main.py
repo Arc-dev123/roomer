@@ -47,6 +47,7 @@ async def on_message(message):
   except Exception as e:
     print("An error occurred:", e)
   return
+
 for cog in config.cogs:
   bot.load_extension(cog)
 

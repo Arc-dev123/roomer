@@ -1,6 +1,6 @@
 import psycopg2
 
-cogs = ["cogs.admin", "cogs.user"]
+cogs = ["cogs.admin", "cogs.user", "cogs.reward"]
 
 secret = "MTIwOTEzMjgxMzAyMzE5MTA2MA.GPwxHf.64eJMSHgauM7ZT9kk9wnAzLlMZWWb487ec3Twg"
 

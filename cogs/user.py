@@ -1,4 +1,3 @@
-import discord.utils
 import disnake
 from disnake.ext import commands
 import config
@@ -6,7 +5,6 @@ import config
 db = config.db
 
 cur = config.cur
-
 
 class User(commands.Cog):
 
@@ -34,8 +32,12 @@ class User(commands.Cog):
       cur.execute("INSERT INTO member VALUES (%s, %s, %s)", (str(interaction.user.id), str(interaction.guild_id), channel.id,))
       cur.execute("SELECT * FROM user_stats WHERE user_id = %s", (str(interaction.user.id),))
       if not cur.fetchall():
-        cur.execute("INSERT INTO user_stats VALUES (%s, %s, %s)", (str(interaction.user.id), 0, 1,))
+        cur.execute("INSERT INTO user_stats VALUES (%s, %s, %s, %s)", (str(interaction.user.id), 0, 1, 0,))
         db.commit()
+      cur.execute("SELECT * FROM user_stats WHERE user_id = %s", (str(interaction.user.id),))
+      if cur.fetchall():
+          cur.execute("INSERT INTO member_inventory VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (str(interaction.user.id), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,))
+          db.commit()
       await channel.set_permissions(interaction.guild.default_role,
                     read_message_history=False,
                     read_messages=False
@@ -82,7 +84,7 @@ class User(commands.Cog):
       await interaction.user.send("Done, your room has been deleted!")
     await interaction.edit_original_response("Done, your room has been deleted!")
     return
-    
+
   @commands.slash_command(name="stats", description="Lets the user see their stats")
   async def stats(interaction: disnake.CommandInteraction):
     cur.execute("SELECT xp, level FROM user_stats WHERE user_id = %s", (str(interaction.user.id),))
@@ -136,9 +138,14 @@ class User(commands.Cog):
       await interaction.response.send_message("Please wait...")
       cur.execute("SELECT channel_id FROM member WHERE user_id = %s AND server_id = %s", (str(interaction.user.id), str(interaction.guild.id),))
       channel_id = cur.fetchone()[0]
+      if not channel_id:
+          await interaction.edit_original_response(
+              "Whoops! Seems like you don't have a room in this server. Use /create_room to create a room first!")
+          return
       channel = disnake.utils.get(interaction.guild.text_channels, id=channel_id)
       async for message in channel.history(limit=None):
           await message.delete()
       return
+
 def setup(bot: commands.Bot):
   bot.add_cog(User(bot)) 
