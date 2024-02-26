@@ -5,7 +5,7 @@ secret = "MTIwOTEzMjgxMzAyMzE5MTA2MA.GPwxHf.64eJMSHgauM7ZT9kk9wnAzLlMZWWb487ec3T
 cogs = ["cogs.admin", "cogs.user", "cogs.item"]
 
 items = [
-            ["🥶 A/C", "It's really chilly, maybe keep the temperature down!", 1.5, 5, "AC"],
+            ["🥶 A/C", "It's really chilly, maybe keep the temperature down!", 1.5, 5, "ac"],
             ["👗 Clothes Valet", "Maybe keep your favorite dress up here to make all your friends jealous!", 3, 10, "clothes_valet"],
             ["🛏️ Bed", "A place for you to rest after a long day of work!", 6, 15, "bed"],
             ["💡 Desk Lamp", "A bright light is always right!", 12, 20, "desk_lamp"],

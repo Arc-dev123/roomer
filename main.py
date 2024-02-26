@@ -27,13 +27,8 @@ async def on_message(message):
       if info[0][0] >= info[0][1] * 25:
         cur.execute("UPDATE user_stats SET xp = 0, level = level + 1 WHERE user_id = %s", (str(message.author.id),))
         db.commit()
-        for item in config.items:
-          cur.execute("SELECT level FROM user_stats WHERE user_id = %s", (str(message.author.id),))
-          if item[3] <= cur.fetchone()[0]:
-            cur.execute(f"UPDATE member_inventory SET {item[4]} = 1 WHERE user_id = %s", (str(message.author.id),))
-            db.commit()
-            await message.channel.send(f"{message.author.mention} reached level **{cur.fetchone()[0]}** and obtained **'{item[0]}'**!")
-            return
+        await message.channel.send(f"{message.author.mention} reached level **{cur.fetchone()[0]}**!")
+        return
   except Exception as e:
     print(e)
 
