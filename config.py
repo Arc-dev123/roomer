@@ -27,5 +27,3 @@ db = psycopg2.connect(
 )
 
 cur = db.cursor()
-
-

@@ -92,7 +92,7 @@ class User(commands.Cog):
     if info == None:
       await interaction.response.send_message("You don't have any stats yet! Create a room first!", ephemeral=True)
       return
-    embed = disnake.Embed(title=f"{interaction.author.name}'s **STATS:**", description=f"**XP:** {info[0]}\n**Level:** {info[1]}", color=disnake.Color.green())
+    embed = disnake.Embed(title=f"{interaction.author.name}'s **STATS:**", description=f"**XP:** {info[0]}/{25 * info[1]}\n\n**Level:** {info[1]}", color=disnake.Color.green())
     await interaction.response.send_message(embed=embed)
 
   @commands.slash_command(name="add_user", description="Lets the user to add more members into their group")
@@ -148,4 +148,4 @@ class User(commands.Cog):
       return
 
 def setup(bot: commands.Bot):
-  bot.add_cog(User(bot)) 
+  bot.add_cog(User(bot))
