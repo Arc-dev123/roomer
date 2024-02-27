@@ -6,8 +6,7 @@ This bot can be used to create 'Rooms' (seperate channels for users), if they ha
 
 # 🗣️🗣️ Commands 🗣️🗣️:
 Roomer has 5 commands in total:
-  * /setup (This command is only for users who have **Administrator** permissions in the server. This command sets up the bot so that it can work in the server. Must be   
-  used.)
+  * /setup (This command is only for users who have **Administrator** permissions in the server. This command sets up the bot so that it can work in the server. Must be used.)
   * /create_room (This command allows a user to create their own room in the server, if they have the room key.)
   * /delete_room (This command allows a user to create their own room in the server, if they have the room key.)
   * /add_user (This command allows a user to add more users into their group using their ID.)
