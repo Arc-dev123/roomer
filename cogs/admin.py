@@ -18,11 +18,11 @@ class Admin(commands.Cog):
     category = await interaction.guild.create_category("ROOMER")
     role = await interaction.guild.create_role(name="Roomer key")
     cur.execute("SELECT * FROM server WHERE server_id = %s", (str(interaction.user.id),))
-    if not cur.fetchone():
-      cur.execute("UPDATE server SET room_category = %s WHERE user_id = %s", (category.id,))
-      cur.execute("UPDATE server SET room_key = %s WHERE user_id %s", (role.id,))
+    if cur.fetchone():
+      cur.execute("UPDATE server SET room_category = %s WHERE user_id = %s", (category.id, str(interaction.user.id),))
+      cur.execute("UPDATE server SET room_key = %s WHERE user_id = %s", (role.id, str(interaction.user.id),))
       db.commit()
-    elif cur.fetchone():
+    elif not cur.fetchone():
       cur.execute("INSERT INTO server VALUES (%s, %s, %s)", (str(interaction.guild_id), category.id, role.id,))
       db.commit()
     embed = disnake.Embed(

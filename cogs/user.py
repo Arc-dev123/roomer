@@ -15,6 +15,10 @@ class User(commands.Cog):
   async def create_room(interaction: disnake.CommandInteraction, name: str):
       await interaction.response.send_message("Please wait...", ephemeral=True)
       cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
+      if not cur.fetchone():
+          await interaction.edit_original_response("Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
+          return
+      cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
       role = cur.fetchone()[0]
       role = disnake.utils.get(interaction.guild.roles, id=role)
       if not role in interaction.user.roles:
@@ -63,6 +67,13 @@ class User(commands.Cog):
   async def delete_room(interaction: disnake.CommandInteraction):
     await interaction.response.send_message("Please wait...", ephemeral=True)
     cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
+    if not cur.fetchone():
+        await interaction.edit_original_response("Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
+        return
+    cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
+    if not cur.fetchone():
+        await interaction.edit_original_response("Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
+        return
     role = cur.fetchone()[0]
     role = disnake.utils.get(interaction.guild.roles, id=role)
     if not role in interaction.user.roles:
@@ -87,6 +98,10 @@ class User(commands.Cog):
 
   @commands.slash_command(name="stats", description="Lets the user see their stats")
   async def stats(interaction: disnake.CommandInteraction):
+    cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
+    if not cur.fetchone():
+        await interaction.edit_original_response("Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
+        return
     cur.execute("SELECT xp, level FROM user_stats WHERE user_id = %s", (str(interaction.user.id),))
     info = cur.fetchone()
     if info == None:
@@ -98,6 +113,11 @@ class User(commands.Cog):
   @commands.slash_command(name="add_user", description="Lets the user to add more members into their group")
   async def add_user(interaction: disnake.CommandInteraction, user: str):
     await interaction.response.send_message("Please wait...", ephemeral=True)
+    cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
+    if not cur.fetchone():
+        await interaction.edit_original_response(
+            "Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
+        return
     cur.execute("SELECT channel_id FROM member WHERE server_id = %s and user_id = %s", (str(interaction.guild_id), str(interaction.user.id),))
     channel_id = cur.fetchone()[0]
     channel = disnake.utils.get(interaction.guild.channels, id=channel_id)
@@ -118,6 +138,11 @@ class User(commands.Cog):
 
   @commands.slash_command(name="remove_user", description="Lets the user to remove members from their group")
   async def remove_user(interaction: disnake.CommandInteraction, user: str):
+    await interaction.response.send_message("Please wait...", ephemeral=True)
+    cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
+    if not cur.fetchone():
+        await interaction.edit_original_response("Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
+        return
     cur.execute("SELECT channel_id FROM member WHERE server_id = %s and user_id = %s", (str(interaction.guild_id), str(interaction.user.id),))
     channel_id = cur.fetchone()[0]
     channel = disnake.utils.get(interaction.guild.channels, id=channel_id)
@@ -135,7 +160,12 @@ class User(commands.Cog):
 
   @commands.slash_command(name="purge", description="Deletes all messages from the user's room")
   async def purge(interaction: disnake.CommandInteraction):
-      await interaction.response.send_message("Please wait...")
+      await interaction.response.send_message("Please wait...", ephemeral=True)
+      cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
+      if not cur.fetchone():
+          await interaction.edit_original_response(
+              "Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
+          return
       cur.execute("SELECT channel_id FROM member WHERE user_id = %s AND server_id = %s", (str(interaction.user.id), str(interaction.guild.id),))
       channel_id = cur.fetchone()[0]
       if not channel_id:

@@ -31,24 +31,19 @@ async def on_message(message):
         return
   except Exception as e:
     print(e)
-
-  try:
-    channel = message.channel
-    cur.execute("SELECT user_id FROM member WHERE channel_id = %s", (channel.id,))
-    info = cur.fetchone()
-
-    if info:
-      user_id = info[0]
-
-      cur.execute("UPDATE user_stats SET xp = xp + 1 WHERE user_id = %s", (user_id,))
-      db.commit()
-
-      cur.execute("SELECT xp FROM user_stats WHERE user_id = %s", (user_id,))
-
-    else:
-      print("Channel not found in database")
-  except Exception as e:
-    print("An error occurred:", e)
+  channel = message.channel
+  cur.execute("SELECT user_id FROM member WHERE channel_id = %s", (channel.id,))
+  info = cur.fetchone()
+  if info:
+    item = [1]
+    for items in config.items:
+      cur.execute(f"SELECT {items[4]} FROM member_inventory WHERE user_id = %s", (message.author.id,))
+      if cur.fetchone()[0] == 1:
+        item.append(items[2])
+    cur.execute("UPDATE user_stats SET xp = xp + %s WHERE user_id = %s", (int(max(item)), str(message.author.id),))
+    db.commit()
+  else:
+    print("Channel not found in database")
 
   return
 
