@@ -11,94 +11,25 @@ class User(commands.Cog):
   def __init__(self, bot: commands.Bot):
     self.bot = bot
   
-  @commands.slash_command(name="create_room", description="Lets the user create a room")
-  async def create_room(interaction: disnake.CommandInteraction, name: str):
-      await interaction.response.send_message("Please wait...", ephemeral=True)
-      cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
-      if not cur.fetchone():
-          await interaction.edit_original_response("Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
-          return
-      cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
-      role = cur.fetchone()[0]
-      role = disnake.utils.get(interaction.guild.roles, id=role)
-      if not role in interaction.user.roles:
-        await interaction.edit_original_response("Whoops! It seems like you do not have the room key! Ask your server admin to give you the key first!")
-        return
-      cur.execute("SELECT channel_id FROM member WHERE server_id = %s AND user_id = %s", (str(interaction.guild.id), str(interaction.user.id),))
-      if cur.fetchone():
-          await interaction.edit_original_response("Whoops! Seems like you already have a room in this server. Use /delete_room to delete your room then try again!")
-          return
-      cur.execute("SELECT room_category FROM server WHERE server_id = %s", (str(interaction.guild_id),))
-      r_cate = cur.fetchone()[0]
-      r_cate = disnake.utils.get(interaction.guild.categories, id=r_cate)
-      channel = await interaction.guild.create_text_channel(name=name, category=r_cate)
-
-      cur.execute("INSERT INTO member VALUES (%s, %s, %s)", (str(interaction.user.id), str(interaction.guild_id), channel.id,))
-      cur.execute("SELECT * FROM user_stats WHERE user_id = %s", (str(interaction.user.id),))
-      if not cur.fetchall():
-        cur.execute("INSERT INTO user_stats VALUES (%s, %s, %s, %s)", (str(interaction.user.id), 0, 1, 0,))
-        db.commit()
-      cur.execute("SELECT * FROM user_stats WHERE user_id = %s", (str(interaction.user.id),))
-      if cur.fetchall():
-          cur.execute("INSERT INTO member_inventory VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (str(interaction.user.id), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,))
-          db.commit()
-      await channel.set_permissions(interaction.guild.default_role,
-                    read_message_history=False,
-                    read_messages=False
-      )
-      await channel.set_permissions(interaction.author,
-                    read_message_history=True,
-                    read_messages=True,
-                    send_messages=True
-      )
-      embed = disnake.Embed(
-          title="Woohoo!",
-          description=f"Welcome to your room, {interaction.user.mention}!"
-      )
-      embed.add_field(name="/add_user (USER ID)", value="This command can be used to add more members into your room!", inline=False)
-      embed.add_field(name="/remove_user (USER ID)", value="This command can be used to remove members from your room!", inline=False)
-      embed.add_field(name="/purge", value="Delete all messages from the channel!", inline=False)
-      embed.add_field(name="/stats", value="This command can be used to check your stats!", inline=False)
-      await channel.send(content=interaction.user.mention, embed=embed)
-      await interaction.edit_original_response(f"Done, check out your room in <#{channel.id}>!")
-      return
-  
-  @commands.slash_command(name="delete_room", description="Lets the user delete their room")
-  async def delete_room(interaction: disnake.CommandInteraction):
+  @commands.slash_command(name="set_room", description="Lets the user create a room")
+  async def set_room(interaction: disnake.CommandInteraction, channel: disnake.TextChannel):
     await interaction.response.send_message("Please wait...", ephemeral=True)
-    cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
+    cur.execute("SELECT * FROM server WHERE server_id = %s", (str(interaction.guild_id),))
     if not cur.fetchone():
-        await interaction.edit_original_response("Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
+        await interaction.edit_original_response(
+            "Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
         return
-    cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
-    if not cur.fetchone():
-        await interaction.edit_original_response("Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
-        return
-    role = cur.fetchone()[0]
-    role = disnake.utils.get(interaction.guild.roles, id=role)
-    if not role in interaction.user.roles:
-      await interaction.edit_original_response("Whoops! It seems like you do not have the room key! Ask your server admin to give you the key first!")
-      return
-    cur.execute("SELECT channel_id FROM member WHERE server_id = %s AND user_id = %s",
-                (str(interaction.guild.id), str(interaction.user.id),))
-    if not cur.fetchone():
-        await interaction.edit_original_response("Whoops! Seems like you don't have a room in this server. Use /create_room to create a room first!")
-        return
-    cur.execute("SELECT channel_id FROM member WHERE user_id = %s AND server_id = %s", (str(interaction.user.id), str(interaction.guild_id),))
-
-    channel_id = cur.fetchone()[0]
-    channel = disnake.utils.get(interaction.guild.channels, id=channel_id)
-    await channel.delete()
-    cur.execute("DELETE FROM member WHERE user_id = %s AND server_id = %s", (str(interaction.user.id), str(interaction.guild_id),))
+    cur.execute("SELECT * FROM member WHERE user_id = %s AND server_id = %s", (str(interaction.user.id), str(interaction.guild.id)))
+    if cur.fetchone():
+        cur.execute("UPDATE member SET channel_id = %s WHERE user_id = %s AND server_id = %s", (channel.id, str(interaction.user.id), str(interaction.guild.id),))
+    elif not cur.fetchone():
+        cur.execute("INSERT INTO member VALUES (%s, %s, %s)", (str(interaction.user.id), str(interaction.guild.id), channel.id,))
     db.commit()
-    if interaction.channel_id == channel_id:
-      await interaction.user.send("Done, your room has been deleted!")
-    await interaction.edit_original_response("Done, your room has been deleted!")
-    return
+    await interaction.edit_original_response(f"Your channel has been set! <#{channel.id}>")
 
   @commands.slash_command(name="stats", description="Lets the user see their stats")
   async def stats(interaction: disnake.CommandInteraction):
-    cur.execute("SELECT room_key FROM server WHERE server_id = %s", (str(interaction.guild_id),))
+    cur.execute("SELECT * FROM server WHERE server_id = %s", (str(interaction.guild_id),))
     if not cur.fetchone():
         await interaction.edit_original_response("Whoops! It seems like the server didn't setup the bot yet... tell an administrator to set it up!")
         return
