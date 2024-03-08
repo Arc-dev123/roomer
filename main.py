@@ -28,7 +28,6 @@ async def on_message(message):
         cur.execute("UPDATE user_stats SET xp = 0, level = level + 1 WHERE user_id = %s", (str(message.author.id),))
         db.commit()
         await message.channel.send(f"{message.author.mention} reached level **{cur.fetchone()[0]}**!")
-        return
   except Exception as e:
     print(e)
   channel = message.channel
@@ -37,15 +36,13 @@ async def on_message(message):
   if info:
     item = [1]
     for items in config.items:
-      cur.execute(f"SELECT {items[4]} FROM member_inventory WHERE user_id = %s", (message.author.id,))
+      cur.execute(f"SELECT {items[4]} FROM member_inventory WHERE user_id = {int(message.author.id)}")
       if cur.fetchone()[0] == 1:
         item.append(items[2])
     cur.execute("UPDATE user_stats SET xp = xp + %s WHERE user_id = %s", (int(max(item)), str(message.author.id),))
     db.commit()
   else:
     print("Channel not found in database")
-
-  return
 
 for cog in config.cogs:
   bot.load_extension(cog)

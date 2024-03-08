@@ -1,6 +1,6 @@
 import psycopg2
 
-secret = "MTIwOTEzMjgxMzAyMzE5MTA2MA.GPwxHf.64eJMSHgauM7ZT9kk9wnAzLlMZWWb487ec3Twg"
+secret = "MTIwOTEzMjgxMzAyMzE5MTA2MA.GqZkHe.KrcoLVHS1GmK_nJ1VBePzpfZWLYCBlbSZcHRjQ"
 
 cogs = ["cogs.admin", "cogs.user", "cogs.item"]
 
@@ -27,3 +27,6 @@ db = psycopg2.connect(
 )
 
 cur = db.cursor()
+
+
+db.commit()
