@@ -1,6 +1,6 @@
 import psycopg2
 
-secret = "MTIwOTEzMjgxMzAyMzE5MTA2MA.GqZkHe.KrcoLVHS1GmK_nJ1VBePzpfZWLYCBlbSZcHRjQ"
+secret = "" #Insert your bot token
 
 cogs = ["cogs.admin", "cogs.user", "cogs.item"]
 
@@ -19,12 +19,13 @@ items = [
         ]
 
 db = psycopg2.connect(
-  dbname="postgres",
-  user="postgres.xclltlpuejthyjjsdsyv",
-  password="ROBUXGUD123",
-  host="aws-0-ap-south-1.pooler.supabase.com",
-  port=5432
+  dbname="",
+  user="",
+  password="",
+  host=""
 )
+
+#Insert all info as needed
 
 cur = db.cursor()
 
